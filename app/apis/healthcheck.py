@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 
-ROUTE = 'healthcheck'
+ROUTE = 'HealthCheck'
 
 api = Namespace(ROUTE)
 
