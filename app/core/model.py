@@ -4,6 +4,7 @@ from config.config import (
     DEFAULT_RANGE, 
     DEFAULT_WR_CUM,
     CARD_RANKS,
+    CARD_SUITS
     )
 
 from schemas import Actions
@@ -17,7 +18,7 @@ with open('./app/data/hands.json', 'r') as f:
 
 
 def make_action(hand: list[str],  hand_range=DEFAULT_RANGE) -> str:
-    hand.sort(key=lambda x: CARD_RANKS[x[0]], reverse=True)
+    hand.sort(key=lambda x: (CARD_RANKS[x[0]], CARD_SUITS[x[1]]), reverse=True)
     hand_str = ''.join(map(str, hand))
     r = hands_range[hands_combination[hand_str]]['range']
     if r <= DEFAULT_RANGE:
