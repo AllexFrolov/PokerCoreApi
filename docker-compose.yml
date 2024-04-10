@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      FLASK_APP: ${FLASK_APP}
+      FLASK_RUN_HOST: ${FLASK_RUN_HOST}
+      FLASK_RUN_PORT: ${FLASK_RUN_PORT}
+    ports:
+      - "8001:8001"
+
+volumes:
+  pg_data:

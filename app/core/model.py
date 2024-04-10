@@ -10,10 +10,10 @@ from config.config import (
 from schemas import Actions
 
 
-with open('./app/data/hands_range.json', 'r') as f:
+with open('./data/hands_range.json', 'r') as f:
     hands_range =  json.loads(f.read())
 
-with open('./app/data/hands.json', 'r') as f:
+with open('./data/hands.json', 'r') as f:
     hands_combination = json.loads(f.read())
 
 
