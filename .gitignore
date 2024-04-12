@@ -11,6 +11,7 @@ clibrary.so
 /Makefile
 /build/
 /trash/
+.vscode
 
 # C extensions
 *.so
