@@ -1,17 +1,14 @@
 #include <stdio.h>
 #include "shared/evaluator.h"
 
-int calc_monte_carlo(char *hand, char *board, int board_size) {
+int calc_monte_carlo(char **hand, char **board, int board_size) {
     int deck[52];
     init_deck(deck);
     shuffle_deck(deck);
 
-    printf("%s\n", hand);
-
-    printf("%s\n", board);
-    // for (int i = 0; i < 2; i++) {
-    //     int c = find_card(hand[i], deck);
-    //     printf("%d\n", c);
-    // }
+    for (int i = 0; i < 2; i++) {
+        int c = find_card(hand[i], deck);
+        printf("%d\n", c);
+    }
     return 0;
 }

@@ -4,15 +4,32 @@ import ctypes as ct
 
 mc_lib = ct.CDLL(os.getcwd() + '/app/core/montecarlo/build/libMontecarlo.so')
 
-calc_monte_carlo = mc_lib.calc_monte_carlo
-calc_monte_carlo.argtypes = [ct.POINTER(ct.c_char), ct.POINTER(ct.c_char), ct.c_int]
-calc_monte_carlo.restype = ct.c_int
+calc_monte_carlo_c = mc_lib.calc_monte_carlo
+calc_monte_carlo_c.argtypes = [
+    ct.POINTER(ct.c_char_p),  # char **
+    ct.POINTER(ct.c_char_p),  # char **
+    ct.c_int]                 # int
+calc_monte_carlo_c.restype = ct.c_int
+
+
+
+def _convert_pylist_strings(values: list[str]):
+    if values is None:
+        raise ValueError(f"Parameter 'py_list' must be a Python list, not {type(values)}")
+
+    c_array = (ct.c_char_p * len(values))()
+    c_array[:] = values
+
+    return c_array
+
+def calc_montecarlo(hand: list[str], board: list[str]):
+    """
+    Calculates the Monte Carlo value of a hand against a board.
+    """
+    _hand = _convert_pylist_strings([c.encode() for c in hand])
+    _board = _convert_pylist_strings([c.encode() for c in board])
+    return calc_monte_carlo_c(_hand, _board, len(board))
+
 
 if __name__ == '__main__':
-    hand = (ct.c_char * 2)()
-    hand[0] = b'A'
-    hand[1] = b'K'
-    board = (ct.c_char * 2)()
-    board[0] = b'A'
-    board[1] = b'K'
-    print(calc_monte_carlo(hand, board, len(board)))
+    print(calc_montecarlo(['As', 'Ks'], ['Ad', 'Kd', '2h']))
