@@ -3,6 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# any trash
+*reference*
+test.ipynb
+clibrary.c
+clibrary.so
+/Makefile
+/build/
+/trash/
+
 # C extensions
 *.so
 
