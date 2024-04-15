@@ -4,10 +4,8 @@
 const char* STR_RANKS = "23456789TJQKA";
 const char* STR_SUITS = "cdhs";
 
-void srand48();
-double drand48();
-
-void init_deck(int *deck)
+void 
+init_deck(int *deck)
 {
     int n = 0, suit = 0x8000;
 
@@ -17,50 +15,48 @@ void init_deck(int *deck)
 }
 
 
-int find_card_helper(int rank, int suit, int *deck)
+int 
+find_card_helper(const int *rank, const int *suit, int *deck)
 {
     for (int i = 0; i < 52; i++)
     {
         int c = deck[i];
-        if ((c & suit) && (RANK(c) == rank))
+        if ((c & (CLUB >> *suit)) && (RANK(c) == *rank)) {
             return i;
+        }
     }
     return -1;
 }
 
+void 
+shuffle_deck(int *deck, int size) {
+    srand(time(NULL));
+    for (int i = 0; i < size; ++i) {
+        int randomIndex = rand() % size;
 
-void shuffle_deck(int *deck)
-{
-    int n, temp[52];
-
-    for (int i = 0; i < 52; i++)
-        temp[i] = deck[i];
-
-    for (int i = 0; i < 52; i++)
-    {
-        do {
-            n = (int)(51.9999999 * drand48());
-        } while (temp[n] == 0);
-        deck[i] = temp[n];
-        temp[n] = 0;
+        int temp = deck[i];
+        deck[i] = deck[randomIndex];
+        deck[randomIndex] = temp;
     }
 }
 
 
-int find_card(const char* card, int *deck) 
+int 
+find_card(const char* card, int *deck) 
 {
     const char* rank_ptr = strchr(STR_RANKS, card[0]);
     const char* suit_ptr = strchr(STR_SUITS, card[1]);
     if (rank_ptr == NULL || suit_ptr == NULL) 
         return -1;
 
-    size_t rank = rank_ptr - STR_RANKS;
-    size_t suit = suit_ptr - STR_SUITS;
-    return find_card_helper(rank, suit, deck);
+    int rank = (int)(rank_ptr - STR_RANKS);
+    int suit = (int)(suit_ptr - STR_SUITS);
+    return find_card_helper(&rank, &suit, deck);
 }
 
 
-static unsigned find_fast(unsigned u)
+static unsigned 
+find_fast(unsigned u)
 {
     unsigned a, b, r;
 
@@ -75,7 +71,8 @@ static unsigned find_fast(unsigned u)
 }
 
 
-static unsigned short eval_5cards(int c1, int c2, int c3, int c4, int c5)
+static unsigned short 
+eval_5cards(int c1, int c2, int c3, int c4, int c5)
 {
     int q = (c1 | c2 | c3 | c4 | c5) >> 16;
     short s;
@@ -118,4 +115,12 @@ eval_7hand(int *hand)
             best = q;
     }
     return best;
+}
+
+void
+move_to_end(int *deck, const int *idx, int *array_size)
+{
+    int temp_c = deck[*idx];
+    deck[*idx] = deck[(*array_size)--];
+    deck[*array_size] = temp_c;
 }
