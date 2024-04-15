@@ -1,8 +1,12 @@
 #pylint: disable=C0114:missing-module-docstring
 import os
 import ctypes as ct
+from sys import platform
 
-mc_lib = ct.CDLL(os.getcwd() + '/app/core/montecarlo/build/libMontecarlo.so')
+if platform == "linux" or platform == "linux2":
+    mc_lib = ct.CDLL(os.getcwd() + '/app/core/montecarlo/build/libMontecarlo.so')
+else:
+    mc_lib = ct.CDLL(os.getcwd() + '/app/core/montecarlo/build/libMontecarlo.dll')
 
 calc_monte_carlo_c = mc_lib.calc_monte_carlo
 calc_monte_carlo_c.argtypes = [
