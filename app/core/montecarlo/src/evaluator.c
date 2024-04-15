@@ -16,12 +16,12 @@ init_deck(int *deck)
 
 
 int 
-find_card_helper(const int *rank, const int *suit, int *deck)
+find_card_helper(const int rank, const int suit, int *deck)
 {
     for (int i = 0; i < 52; i++)
     {
         int c = deck[i];
-        if ((c & (CLUB >> *suit)) && (RANK(c) == *rank)) {
+        if ((c & (CLUB >> suit)) && (RANK(c) == rank)) {
             return i;
         }
     }
@@ -29,10 +29,9 @@ find_card_helper(const int *rank, const int *suit, int *deck)
 }
 
 void 
-shuffle_deck(int *deck, int size) {
-    srand(time(NULL));
-    for (int i = 0; i < size; ++i) {
-        int randomIndex = rand() % size;
+shuffle_deck(int *deck, int work_deck_size, int first_n) {
+    for (int i = 0; i < first_n; ++i) {
+        int randomIndex = rand() % work_deck_size;
 
         int temp = deck[i];
         deck[i] = deck[randomIndex];
@@ -51,7 +50,7 @@ find_card(const char* card, int *deck)
 
     int rank = (int)(rank_ptr - STR_RANKS);
     int suit = (int)(suit_ptr - STR_SUITS);
-    return find_card_helper(&rank, &suit, deck);
+    return find_card_helper(rank, suit, deck);
 }
 
 
@@ -101,7 +100,7 @@ eval_5hand(int *hand)
 }
 
 unsigned short
-eval_7hand(int *hand)
+eval_7cards(int **cards)
 {
     int subhand[5];
     unsigned short best = 9999;
@@ -109,7 +108,7 @@ eval_7hand(int *hand)
     for (int i = 0; i < 21; i++)
     {
         for (int j = 0; j < 5; j++)
-            subhand[j] = hand[ perm7[i][j] ];
+            subhand[j] = *(cards[ perm7[i][j] ]);
         unsigned short q = eval_5hand(subhand);
         if (q < best)
             best = q;
@@ -117,10 +116,11 @@ eval_7hand(int *hand)
     return best;
 }
 
-void
-move_to_end(int *deck, const int *idx, int *array_size)
+int
+move_to_end(int *deck, const int *idx, int array_size)
 {
     int temp_c = deck[*idx];
-    deck[*idx] = deck[(*array_size)--];
-    deck[*array_size] = temp_c;
+    deck[*idx] = deck[--array_size];
+    deck[array_size] = temp_c;
+    return array_size;
 }
