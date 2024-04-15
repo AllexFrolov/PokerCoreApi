@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,13 +37,13 @@ void
 init_deck(int *deck);
 
 int
-find_card_helper(int rank, int suit, int *deck);
+find_card_helper(const int *rank, const int *suit, int *deck);
 
 int 
 find_card(const char* card, int *deck);
 
 void
-shuffle_deck(int *deck);
+shuffle_deck(int *deck, int size);
 
 void
 print_hand(int *hand, int n);
@@ -58,6 +59,9 @@ eval_5hand_fast(int *hand);
 
 unsigned short
 eval_7hand(int *hand);
+
+void
+move_to_end(int *deck, const int *idx, int *array_size);
 
 #ifdef __cplusplus
 }
