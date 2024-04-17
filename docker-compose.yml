@@ -11,6 +11,4 @@ services:
       FLASK_RUN_PORT: ${FLASK_RUN_PORT}
     ports:
       - "8001:8001"
-
-volumes:
-  pg_data:
+    container_name: stinky_sock

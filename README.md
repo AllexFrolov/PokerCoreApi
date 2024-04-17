@@ -1,4 +1,5 @@
 # PokerCoreApi
 Poker decision maker
 
-1. Start ```flask -app ./app/app.py run```
+1. Create **.env** file from **.env_example**
+2. Start ```docker-compose up```
