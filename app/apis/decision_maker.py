@@ -27,5 +27,5 @@ class PlayerStats(Resource):
     @api.marshal_with(get_decision_resp, code=200)
     def post(self):
         hand = api.payload['hand']
-        print(api.payload)
-        return {'action': make_action(hand)}, 200
+        board = api.payload['board']
+        return {'action': make_action(hand, board)}, 200
