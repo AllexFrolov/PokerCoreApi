@@ -8,7 +8,7 @@
 #define ITERATIONS 1000000 // number of iterations of monte carlo
 
 
-int calc_monte_carlo(char **hand, char **board, int board_size) {
+double calc_monte_carlo(char **hand, char **board, int board_size) {
 
     int deck[DECK_SIZE];
     init_deck(deck);
@@ -65,5 +65,5 @@ int calc_monte_carlo(char **hand, char **board, int board_size) {
             hero_wins++;
     }
     
-    return hero_wins;
+    return (double)hero_wins / (double)ITERATIONS;
 }
