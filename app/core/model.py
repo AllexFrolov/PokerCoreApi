@@ -1,5 +1,5 @@
 import json
-import os
+
 from config.config import (
     DEFAULT_RANGE, 
     DEFAULT_WR_CUM,
@@ -9,6 +9,9 @@ from config.config import (
 
 from schemas import Actions
 
+from .montecarlo import calc_montecarlo
+
+
 
 with open('./data/hands_range.json', 'r') as f:
     hands_range =  json.loads(f.read())
@@ -17,10 +20,13 @@ with open('./data/hands.json', 'r') as f:
     hands_combination = json.loads(f.read())
 
 
-def make_action(hand: list[str],  hand_range=DEFAULT_RANGE) -> str:
-    hand.sort(key=lambda x: (CARD_RANKS[x[0]], CARD_SUITS[x[1]]), reverse=True)
-    hand_str = ''.join(map(str, hand))
-    r = hands_range[hands_combination[hand_str]]['range']
-    if r <= DEFAULT_RANGE:
+def make_action(hand: list[str], board: list[str]=list(), hand_range: float=None, win_rate: float=None) -> str:
+    wr = calc_montecarlo(hand, board)
+    
+    if win_rate is None:
+        win_rate = DEFAULT_WR_CUM
+                
+    if wr >= win_rate:
         return Actions.PUSH.value
+                
     return Actions.FOLD.value
