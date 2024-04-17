@@ -1,1 +1,0 @@
-cd ./app/core/montecarlo/build; make

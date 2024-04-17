@@ -1,0 +1,1 @@
+docker run --env-file .env -p 8001:8001 --rm --name ss1 stinky_socks
