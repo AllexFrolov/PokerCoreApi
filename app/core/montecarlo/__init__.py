@@ -1,5 +1,5 @@
-from .montecarlo import calc_montecarlo
+from .montecarlo import hero_vs_range
 
 __all__ = [
-    'calc_montecarlo',
+    'hero_vs_range',
     ]
