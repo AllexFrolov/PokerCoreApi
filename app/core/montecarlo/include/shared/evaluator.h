@@ -37,10 +37,10 @@ void
 init_deck(int *deck);
 
 int
-find_card_helper(const int rank, const int suit, int *deck);
+find_card_helper(const int rank, const int suit, int *deck, const int work_deck_size);
 
 int 
-find_card(const char* card, int *deck);
+find_card(const char* card, int *deck, const int work_deck_size);
 
 
 /*Shuffle first_n card between work_deck_size
@@ -72,8 +72,8 @@ unsigned short
 eval_7cards(int **cards);
 
 /*Moves card from idx to array_size - 1, decrease array_size by 1 and return.*/
-int
-move_to_end(int *deck, const int *idx, int array_size); 
+void
+move_to_end(int *deck, const int idx, const int array_size); 
 
 #ifdef __cplusplus
 }

@@ -16,9 +16,9 @@ init_deck(int *deck)
 
 
 int 
-find_card_helper(const int rank, const int suit, int *deck)
+find_card_helper(const int rank, const int suit, int *deck, const int work_deck_size)
 {
-    for (int i = 0; i < 52; i++)
+    for (int i = 0; i < work_deck_size; i++)
     {
         int c = deck[i];
         if ((c & (CLUB >> suit)) && (RANK(c) == rank)) {
@@ -41,7 +41,7 @@ shuffle_deck(int *deck, int work_deck_size, int first_n) {
 
 
 int 
-find_card(const char* card, int *deck) 
+find_card(const char* card, int *deck, const int work_deck_size) 
 {
     const char* rank_ptr = strchr(STR_RANKS, card[0]);
     const char* suit_ptr = strchr(STR_SUITS, card[1]);
@@ -50,7 +50,7 @@ find_card(const char* card, int *deck)
 
     int rank = (int)(rank_ptr - STR_RANKS);
     int suit = (int)(suit_ptr - STR_SUITS);
-    return find_card_helper(rank, suit, deck);
+    return find_card_helper(rank, suit, deck, work_deck_size);
 }
 
 
@@ -116,11 +116,10 @@ eval_7cards(int **cards)
     return best;
 }
 
-int
-move_to_end(int *deck, const int *idx, int array_size)
+void
+move_to_end(int *deck, const int idx, const int array_size)
 {
-    int temp_c = deck[*idx];
-    deck[*idx] = deck[--array_size];
+    int temp_c = deck[idx];
+    deck[idx] = deck[array_size];
     deck[array_size] = temp_c;
-    return array_size;
 }
