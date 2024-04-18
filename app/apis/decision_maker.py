@@ -1,5 +1,5 @@
+#pylint: disable=missing-docstring
 from flask_restx import Namespace, Resource, fields
-from schemas import Actions
 from core.model import make_action
 
 ROUTE = 'DecisionMaker'
@@ -8,10 +8,12 @@ api = Namespace(ROUTE, description='make action')
 
 get_decision_exp = api.model(
     f'/{ROUTE}/get_decision/expect', {
-        'hand': fields.List(fields.String(required=True, description='Hero hand'), default=['7d', '2h'], min_items=2, max_items=2),
+        'hand': fields.List(fields.String(required=True, description='Hero hand'),
+                            default=['7d', '2h'], min_items=2, max_items=2),
         'board': fields.List(fields.String, default=[], min_items=0, max_items=5),
         'pot': fields.Float(required=True, default=1.5, description='Pot'),
-        'stage': fields.String(required=True, description='Stage', enum=['preflop', 'flop', 'turn', 'river']),
+        'stage': fields.String(required=True, description='Stage',
+                               enum=['preflop', 'flop', 'turn', 'river']),
         })
 
 get_decision_resp = api.model(
