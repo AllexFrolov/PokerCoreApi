@@ -9,8 +9,8 @@ api = Namespace(ROUTE, description='make action')
 get_decision_exp = api.model(
     f'/{ROUTE}/get_decision/expect', {
         'hand': fields.List(fields.String(required=True, description='Hero hand'), default=['7d', '2h'], min_items=2, max_items=2),
-        'board': fields.List(fields.String, min_items=0, max_items=5),
-        'pot': fields.Float(required=True, description='Pot'),
+        'board': fields.List(fields.String, default=[], min_items=0, max_items=5),
+        'pot': fields.Float(required=True, default=1.5, description='Pot'),
         'stage': fields.String(required=True, description='Stage', enum=['preflop', 'flop', 'turn', 'river']),
         })
 
@@ -27,6 +27,4 @@ class PlayerStats(Resource):
     @api.expect(get_decision_exp)
     @api.marshal_with(get_decision_resp, code=200)
     def post(self):
-        hand = api.payload['hand']
-        board = api.payload['board']
-        return make_action(hand, board), 200
+        return make_action(**api.payload), 200
