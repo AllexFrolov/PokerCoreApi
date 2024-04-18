@@ -17,6 +17,7 @@ get_decision_exp = api.model(
 get_decision_resp = api.model(
     f'/{ROUTE}/get_decision/response', {
         'action': fields.String(required=True, description='Action', enum=['push', 'fold']),
+        'win_rate': fields.Float(required=True, description='Win rate'),
         })
 
 
@@ -28,4 +29,4 @@ class PlayerStats(Resource):
     def post(self):
         hand = api.payload['hand']
         board = api.payload['board']
-        return {'action': make_action(hand, board)}, 200
+        return make_action(hand, board), 200
