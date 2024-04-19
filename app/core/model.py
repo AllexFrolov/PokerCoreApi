@@ -1,7 +1,7 @@
 #pylint: disable=missing-docstring
 import json
 
-from schemas import Actions
+from schemas import Actions, PlayerTypes, PokerStage
 
 from .montecarlo import hero_vs_range
 
@@ -17,12 +17,27 @@ with open('./data/group_hands.json', 'r') as f:
     group_hands = json.loads(f.read())
 
 
-def make_action(hand: list[str], board: list[str], stage: str, pot: float, *args, **kwargs) -> dict:
+def make_action(
+        hand: list[str],
+        board: list[str],
+        stage: str,
+        pot: float,
+        positions: list[int],
+        action_sequence: list[int],
+        players_stats: dict,
+        *args, **kwargs) -> dict:
 
     response = {
         'action': None,
         'win_rate': 0,
     }
+
+    if len(action_sequence) == 1:
+        response['action'] = Actions.RAISE.value
+        response['win_rate'] = 1.0
+        response['bet_size'] = 0.
+        return response
+                
     if stage == 'preflop':
         opp_range = 0.5
     else:
@@ -37,8 +52,14 @@ def make_action(hand: list[str], board: list[str], stage: str, pot: float, *args
     response['win_rate'] = wr
 
     if wr >= 0.5:
-        response['action'] =  Actions.PUSH.value
+        response['action'] = Actions.ALL_IN.value
+        try:
+            response['bet_size'] = players_stats[PlayerTypes.HERO.value]['stack']
+        except Exception as e:
+            raise KeyError(players_stats)
+
     else:
-        response['action'] =  Actions.FOLD.value
+        response['action'] = Actions.FOLD.value
+        response['bet_size'] = 0
 
     return response
