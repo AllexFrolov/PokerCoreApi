@@ -1,6 +1,7 @@
 #pylint: disable=missing-docstring
 from flask_restx import Namespace, Resource, fields
 from core.model import make_action
+from schemas import Actions, PokerStage
 
 ROUTE = 'DecisionMaker'
 
@@ -13,13 +14,17 @@ get_decision_exp = api.model(
         'board': fields.List(fields.String, default=[], min_items=0, max_items=5),
         'pot': fields.Float(required=True, default=1.5, description='Pot'),
         'stage': fields.String(required=True, description='Stage',
-                               enum=['preflop', 'flop', 'turn', 'river']),
+                               enum=[name for name, _ in PokerStage.__members__.items()]),
+        'positions': fields.List(fields.Integer, default=[0], min_items=1, max_items=9),
+        'action_sequence': fields.List(fields.Integer, default=[0], min_items=1, max_items=9),
+        'players_stats': fields.Raw(required=True)
         })
 
 get_decision_resp = api.model(
     f'/{ROUTE}/get_decision/response', {
-        'action': fields.String(required=True, description='Action', enum=['push', 'fold']),
+        'action': fields.String(required=True, description='Action', enum=[name for name, _ in Actions.__members__.items()]),
         'win_rate': fields.Float(required=True, description='Win rate'),
+        'bet_size': fields.Float(required=True, description='Bet size'),
         })
 
 
