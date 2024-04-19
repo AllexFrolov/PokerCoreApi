@@ -32,7 +32,6 @@ def _convert_list_str(values: list[str]):
 def _convert_list_list_str(values: list[list[str]]):
     c_array = (ct.POINTER(ct.c_char_p) * len(values))()
 
-    # Заполняем массив указателей на массивы указателей на строки
     for i, sublist in enumerate(values):
         arr = (ct.c_char_p * len(sublist))()
         arr[:] = [ct.c_char_p(item.encode('utf-8')) for item in sublist]
