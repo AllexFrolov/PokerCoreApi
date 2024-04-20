@@ -17,15 +17,12 @@ with open('./data/group_hands.json', 'r') as f:
     group_hands = json.loads(f.read())
 
 
-def make_action(
-        hand: list[str],
-        board: list[str],
-        stage: str,
-        pot: float,
-        positions: list[int],
-        action_sequence: list[int],
-        players_stats: dict,
-        *args, **kwargs) -> dict:
+def preflop(hand: list[str], 
+            pot: float,
+            positions: list[str],
+            action_sequence: list[str],
+            players_stats: dict
+            ) -> dict:
 
     response = {
         'action': None,
@@ -37,26 +34,58 @@ def make_action(
         response['win_rate'] = 1.0
         response['bet_size'] = 0.
         return response
-                
-    if stage == 'preflop':
-        opp_range = 0.5
-    else:
-        opp_range = 0.4
+    
+    hero_stats = players_stats[PlayerTypes.HERO.value]
+
+    if hero_stats['bet_size'] == 0:
+        if hero_stats['is_dealer']:
+            opp_range = 0.4
+    
+    
 
     opp_hands = []
     for g_hand, hand_stats in hands_range.items():
         if hand_stats['range'] < opp_range:
             opp_hands += group_hands[g_hand]
 
-    wr = hero_vs_range(hand, opp_hands, board, 1000)
+    wr = hero_vs_range(hand, opp_hands, [], 1000)
+    
     response['win_rate'] = wr
 
     if wr >= 0.5:
         response['action'] = Actions.ALL_IN.value
-        try:
-            response['bet_size'] = players_stats[PlayerTypes.HERO.value]['stack']
-        except Exception as e:
-            raise KeyError(players_stats)
+        response['bet_size'] = players_stats[PlayerTypes.HERO.value]['stack']
+    
+        
+    return {
+    'action': Actions.FOLD,
+    'amount': 0}
+
+
+def make_action(
+        hand: list[str],
+        board: list[str],
+        stage: str,
+        pot: float,
+        positions: list[str],
+        action_sequence: list[str],
+        players_stats: dict,
+        *args, **kwargs) -> dict:
+
+    response = {
+        'action': None,
+        'win_rate': 0,
+    }
+                
+    if stage == PokerStage.PREFLOP.value:
+        return preflop(
+            hand=hand,
+            board=board,
+            pot=pot,
+            positions=positions,
+            action_sequence=action_sequence,
+            players_stats=players_stats
+            )
 
     else:
         response['action'] = Actions.FOLD.value
