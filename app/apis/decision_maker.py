@@ -25,6 +25,7 @@ get_decision_resp = api.model(
         'action': fields.String(required=True, description='Action', enum=[name for name, _ in Actions.__members__.items()]),
         'win_rate': fields.Float(required=True, description='Win rate'),
         'bet_size': fields.Float(required=True, description='Bet size'),
+        'expectation': fields.Float(required=True, description='math expectation'),
         })
 
 
