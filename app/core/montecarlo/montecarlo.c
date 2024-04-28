@@ -19,8 +19,8 @@ calc_montecarlo(
     int work_deck_size,
     unsigned iterations) 
 {
-   
     int i = 0;
+    // add board cards if need
     while (residual_cards < COMB_SIZE)
     {
         hero_idxs[residual_cards] = deck + i;
@@ -83,8 +83,9 @@ double hero_vs_range(
         opp_idxs[opp_last_idx] = deck + work_deck_size;
     }
 
-    int valid_hands = 0;
+    int valid_hands = 0; // count valid opponent hands
     int win_sum = 0;
+    // run montecarlo for all opponent hands
     for (int hand_id=0; hand_id < range_size; ++hand_id)
     {
         char **opp_hand = opp_range[hand_id];
@@ -96,6 +97,7 @@ double hero_vs_range(
         for (int i = 0; i < HAND_SIZE; ++i, ++step_opp_last_idx) 
         {
             int c_idx = find_card(opp_hand[i], deck, step_deck_size);
+            // check to have card, if not than hand is not valid
             if (c_idx == -1) 
             {   
                 have_card = 0;
