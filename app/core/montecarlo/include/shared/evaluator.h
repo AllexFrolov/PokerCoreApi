@@ -30,6 +30,8 @@ static char *value_str[] = {
 #define TURN 4
 #define RIVER 5
 
+#define COMBINATIONS    9
+
 #define	STRAIGHT_FLUSH  0
 #define	FOUR_OF_A_KIND  1
 #define	FULL_HOUSE      2
