@@ -3,6 +3,7 @@ import os
 import ctypes as ct
 from sys import platform
 
+from config import COMBINATIONS_NAME
 from logger import get_logger
 logger = get_logger()
 
@@ -30,6 +31,10 @@ possible_combinations_c.argtypes = [
     ct.c_int]                              # int     (Board size)
 
 possible_combinations_c.restype = ct.POINTER(ct.c_int)
+
+free_memory_c = mc_lib.free_int_arr
+free_memory_c.argtypes = [ct.POINTER(ct.c_int)]
+free_memory_c.restype = None
 
 
 def _convert_list_str(values: list[str]):
@@ -78,21 +83,34 @@ def hero_vs_range(
 def possible_combinations(
         hero_hand: list[str],
         opp_range: list[list[str]],
-        board: list[str]) -> list[int]:
+        board: list[str]) -> tuple[list[int], list[str]]:
     """
     Evaluete all hand in opp range and counting posible combinations
     """
-    num_elements = 9
-    _hero_hand = _convert_list_str(hero_hand)
-    _opp_range = _convert_list_list_str(opp_range)
-    _board = _convert_list_str(board)
+    
+    if len(board) != 0:
+        _hero_hand = _convert_list_str(hero_hand)
+        _opp_range = _convert_list_list_str(opp_range)
+        _board = _convert_list_str(board)
 
-    response = possible_combinations_c(
-        _hero_hand,
-        _opp_range,
-        len(_opp_range),
-        _board,
-        len(board))
-    result = [response[i] for i in range(num_elements)]
-    return result
+        c_int_pointer = possible_combinations_c(
+            _hero_hand,
+            _opp_range,
+            len(_opp_range),
+            _board,
+            len(board))
+        comb_values = [c_int_pointer[i] for i in range(len(COMBINATIONS_NAME))]
+        free_memory_c(c_int_pointer)
+    else:
+        comb_values = [0] * len(COMBINATIONS_NAME)
+        for hand in opp_range:
+            if hand[0][0] == hand[1][0]:
+                comb_values[-2] += 1
+            else:
+                comb_values[-1] += 1
+    
+    comb_values_sum = sum(comb_values)
+    comb_values = [value / comb_values_sum for value in comb_values]
+
+    return comb_values, COMBINATIONS_NAME
     

@@ -2,6 +2,7 @@
 from flask_restx import Namespace, Resource, fields
 from core.model import make_action
 from schemas import Actions, PokerStage
+from config import COMBINATIONS_NAME
 
 ROUTE = 'DecisionMaker'
 
@@ -20,13 +21,21 @@ get_decision_exp = api.model(
         'players_stats': fields.Raw(required=True)
         })
 
+
+class PossibleCombs(fields.Raw):
+    __schema_type__ = 'json'
+    __schema_example__ = {
+        'value': [1/len(COMBINATIONS_NAME)]*len(COMBINATIONS_NAME),
+        'names': COMBINATIONS_NAME
+                          }
+
 get_decision_resp = api.model(
     f'/{ROUTE}/get_decision/response', {
         'action': fields.String(required=True, description='Action', enum=[name for name, _ in Actions.__members__.items()]),
         'win_rate': fields.Float(required=True, description='Win rate'),
         'bet_size': fields.Float(required=True, description='Bet size'),
         'expectation': fields.Float(required=True, description='math expectation'),
-        'opp_possible_combs': fields.List(fields.Integer),
+        'opp_possible_combs': PossibleCombs
         })
 
 

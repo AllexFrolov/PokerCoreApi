@@ -25,6 +25,7 @@ def get_opp_hands(opp_range: float) -> list:
             opp_hands += group_hands[g_hand]
     return opp_hands
 
+
 def preflop(hand: list[str], 
             pot: float,
             positions: list[str],
@@ -82,7 +83,10 @@ def preflop(hand: list[str],
 
     wr = hero_vs_range(hand, opp_hands, [], 1000)
     opp_combs = possible_combinations(hand, opp_hands, [])
-    response['opp_possible_combs'] = opp_combs
+    response['opp_possible_combs'] = {
+        'values': opp_combs[0],
+        'names': opp_combs[1] 
+    }
     
     response['win_rate'] = wr
 
