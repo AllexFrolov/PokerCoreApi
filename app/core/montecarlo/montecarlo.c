@@ -35,13 +35,85 @@ calc_montecarlo(
     for (int iter = 0; iter < iterations; ++iter)
     {
         shuffle_deck(deck, work_deck_size, COMB_SIZE);
-        unsigned short h_score = eval_7cards(hero_idxs);
-        unsigned short op_score = eval_7cards(opp_idxs);
+        unsigned short h_score = eval_cards(hero_idxs, 5);
+        unsigned short op_score = eval_cards(opp_idxs, 5);
         if (h_score < op_score)
             hero_wins++;
     }
     
     return hero_wins;
+}
+
+
+int *possible_combinations(
+    char **hero_hand,
+    char ***opp_range,
+    int range_size,
+    char **board,
+    int board_size)
+{
+    int *combinations = malloc(9 * sizeof(int)); // Выделение памяти в куче
+    if (!combinations) {
+        // Обработка ошибки выделения памяти
+        return NULL;
+    }
+    for (int i = 0; i < 9; i++) {
+        combinations[i] = 0; // Инициализация массива нулями
+    }
+    
+    if (board_size == PREDLOP) return combinations;
+    int deck[DECK_SIZE];
+    init_deck(deck);
+    int work_deck_size = DECK_SIZE;
+
+    int *opp_idxs[COMB_SIZE];
+    int opp_last_idx = 0; 
+
+
+    // Saving hero cards
+    for (int i = 0; i < HAND_SIZE; ++i) 
+    {
+        int c_idx = find_card(hero_hand[i], deck, work_deck_size);
+
+        work_deck_size--;
+        move_to_end(deck, c_idx, work_deck_size);
+    } 
+    // Saving known table cards 
+    for (int i = 0; i < board_size; ++i, ++opp_last_idx)
+    {
+        int c_idx = find_card(board[i], deck, work_deck_size);
+        move_to_end(deck, c_idx, --work_deck_size);
+
+        opp_idxs[opp_last_idx] = deck + work_deck_size;
+    }
+
+    for (int hand_id=0; hand_id < range_size; ++hand_id)
+    {
+        char **opp_hand = opp_range[hand_id];
+        int step_deck_size = work_deck_size;
+        int step_opp_last_idx = opp_last_idx;
+        char have_card = 1;
+
+        // Saving opponent cards
+        for (int i = 0; i < HAND_SIZE; ++i, ++step_opp_last_idx) 
+        {
+            int c_idx = find_card(opp_hand[i], deck, step_deck_size);
+            // check to have card, if not than hand is not valid
+            if (c_idx == -1) 
+            {   
+                have_card = 0;
+                break;
+            }
+            move_to_end(deck, c_idx, --step_deck_size);
+            opp_idxs[step_opp_last_idx] = deck + step_deck_size;
+        }
+        
+        if (!have_card) continue;
+        int comb_score = eval_cards(opp_idxs, board_size);
+        int comb_rank = hand_rank(comb_score);
+        ++combinations[comb_rank]; 
+    }
+    return combinations;
 }
 
 
