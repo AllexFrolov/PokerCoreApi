@@ -52,12 +52,12 @@ int *possible_combinations(
     char **board,
     int board_size)
 {
-    int *combinations = malloc(9 * sizeof(int)); // Выделение памяти в куче
+    int *combinations = malloc(COMBINATIONS * sizeof(int)); // Выделение памяти в куче
     if (!combinations) {
         // Обработка ошибки выделения памяти
         return NULL;
     }
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < COMBINATIONS; i++) {
         combinations[i] = 0; // Инициализация массива нулями
     }
     
@@ -185,6 +185,11 @@ double hero_vs_range(
     }
     return (double)win_sum / (double)(valid_hands * iterations);
 }
+
+void free_int_arr(int *arr) {
+    free(arr);
+}
+
 
 
 #ifdef __cplusplus
