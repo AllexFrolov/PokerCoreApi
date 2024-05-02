@@ -3,9 +3,10 @@ import json
 
 from schemas import Actions, PlayerTypes, PokerStage
 
-from .montecarlo import hero_vs_range
+from .montecarlo import hero_vs_range, possible_combinations
+from logger import get_logger
 
-
+logger = get_logger()
 
 with open('./data/hands_range.json', 'r') as f:
     hands_range =  json.loads(f.read())
@@ -80,6 +81,8 @@ def preflop(hand: list[str],
     opp_hands = get_opp_hands(opp_range)
 
     wr = hero_vs_range(hand, opp_hands, [], 1000)
+    opp_combs = possible_combinations(hand, opp_hands, [])
+    response['opp_possible_combs'] = opp_combs
     
     response['win_rate'] = wr
 
@@ -127,8 +130,10 @@ def make_action(
         opp_hands = get_opp_hands(opp_range)
 
         wr = hero_vs_range(hand, opp_hands, board, 1000)
+        opp_combs = possible_combinations(hand, opp_hands, board)
         response['win_rate'] = wr
         response['expectation'] = 0
+        response['opp_possible_combs'] = opp_combs
 
         if wr > 0.5:
             response['action'] = Actions.ALL_IN.value

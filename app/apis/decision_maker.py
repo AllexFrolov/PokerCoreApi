@@ -26,6 +26,7 @@ get_decision_resp = api.model(
         'win_rate': fields.Float(required=True, description='Win rate'),
         'bet_size': fields.Float(required=True, description='Bet size'),
         'expectation': fields.Float(required=True, description='math expectation'),
+        'opp_possible_combs': fields.List(fields.Integer),
         })
 
 
