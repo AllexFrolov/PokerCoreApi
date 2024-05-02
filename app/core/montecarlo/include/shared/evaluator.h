@@ -25,6 +25,21 @@ static char *value_str[] = {
     "High Card"
 };
 
+#define PREDLOP 0
+#define FLOP 3
+#define TURN 4
+#define RIVER 5
+
+#define	STRAIGHT_FLUSH  0
+#define	FOUR_OF_A_KIND  1
+#define	FULL_HOUSE      2
+#define	FLUSH           3
+#define	STRAIGHT        4
+#define	THREE_OF_A_KIND 5
+#define	TWO_PAIR        6
+#define	ONE_PAIR        7
+#define	HIGH_CARD       8
+
 #define CLUB    0x8000
 #define DIAMOND 0x4000
 #define HEART   0x2000
@@ -69,11 +84,14 @@ unsigned short
 eval_5hand_fast(int *hand);
 
 unsigned short
-eval_7cards(int **cards);
+eval_cards(int **cards, const int board_size);
 
 /*Moves card from idx to array_size - 1, decrease array_size by 1 and return.*/
 void
 move_to_end(int *deck, const int idx, const int array_size); 
+
+int
+hand_rank(unsigned short val);
 
 #ifdef __cplusplus
 }

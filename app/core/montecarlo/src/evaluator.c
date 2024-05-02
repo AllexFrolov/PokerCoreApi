@@ -100,12 +100,19 @@ eval_5hand(int *hand)
 }
 
 unsigned short
-eval_7cards(int **cards)
+eval_cards(int **cards, const int board_size)
 {
     int subhand[5];
     unsigned short best = 9999;
 
-    for (int i = 0; i < 21; i++)
+    int permutations = 21;
+    if (board_size == FLOP) 
+        permutations = 1;
+    else if (board_size == TURN)
+        permutations = 6;
+    
+
+    for (int i = 0; i < permutations; i++)
     {
         for (int j = 0; j < 5; j++)
             subhand[j] = *(cards[ perm7[i][j] ]);
@@ -122,4 +129,22 @@ move_to_end(int *deck, const int idx, const int array_size)
     int temp_c = deck[idx];
     deck[idx] = deck[array_size];
     deck[array_size] = temp_c;
+}
+
+
+
+// Returns the hand rank of the given equivalence class value.
+// Note: the parameter "val" should be in the range of 1-7462.
+int
+hand_rank(unsigned short val)
+{
+    if (val > 6185) return HIGH_CARD;        // 1277 high card
+    if (val > 3325) return ONE_PAIR;         // 2860 one pair
+    if (val > 2467) return TWO_PAIR;         //  858 two pair
+    if (val > 1609) return THREE_OF_A_KIND;  //  858 three-kind
+    if (val > 1599) return STRAIGHT;         //   10 straights
+    if (val > 322)  return FLUSH;            // 1277 flushes
+    if (val > 166)  return FULL_HOUSE;       //  156 full house
+    if (val > 10)   return FOUR_OF_A_KIND;   //  156 four-kind
+    return STRAIGHT_FLUSH;                   //   10 straight-flushes
 }
