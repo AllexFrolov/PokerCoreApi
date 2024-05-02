@@ -3,6 +3,9 @@ import os
 import ctypes as ct
 from sys import platform
 
+from logger import get_logger
+logger = get_logger()
+
 if platform == "linux" or platform == "linux2":
     mc_lib = ct.CDLL(os.getcwd() + '/core/montecarlo/build/libMontecarlo.so')
 else:
@@ -18,6 +21,15 @@ hero_vs_range_c.argtypes = [
     ct.c_uint]                              # unsigned int (Number of iterations)
 hero_vs_range_c.restype = ct.c_double
 
+possible_combinations_c = mc_lib.possible_combinations
+possible_combinations_c.argtypes = [
+    ct.POINTER(ct.c_char_p),                # char ** (Hero cards)
+    ct.POINTER(ct.POINTER(ct.c_char_p)),    # char *** (Opponent range)
+    ct.c_int,                               # int     (range size)
+    ct.POINTER(ct.c_char_p),                # char ** (Board cards)
+    ct.c_int]                              # int     (Board size)
+
+possible_combinations_c.restype = ct.POINTER(ct.c_int)
 
 
 def _convert_list_str(values: list[str]):
@@ -61,3 +73,26 @@ def hero_vs_range(
         _iterations)
 
     return response
+
+
+def possible_combinations(
+        hero_hand: list[str],
+        opp_range: list[list[str]],
+        board: list[str]) -> list[int]:
+    """
+    Evaluete all hand in opp range and counting posible combinations
+    """
+    num_elements = 9
+    _hero_hand = _convert_list_str(hero_hand)
+    _opp_range = _convert_list_list_str(opp_range)
+    _board = _convert_list_str(board)
+
+    response = possible_combinations_c(
+        _hero_hand,
+        _opp_range,
+        len(_opp_range),
+        _board,
+        len(board))
+    result = [response[i] for i in range(num_elements)]
+    return result
+    
