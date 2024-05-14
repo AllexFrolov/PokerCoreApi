@@ -12,9 +12,9 @@ extern "C" {
 
 int 
 calc_montecarlo(
-    int **deck,
-    char **hero_idxs,
-    char **opp_idxs,
+    int *deck,
+    int **hero_idxs,
+    int **opp_idxs,
     int residual_cards,
     int work_deck_size,
     unsigned iterations) 
@@ -92,23 +92,23 @@ int *possible_combinations(
         char **opp_hand = opp_range[hand_id];
         int step_deck_size = work_deck_size;
         int step_opp_last_idx = opp_last_idx;
-        char have_card = 1;
+        char valid_hand = 1;
 
         // Saving opponent cards
         for (int i = 0; i < HAND_SIZE; ++i, ++step_opp_last_idx) 
         {
             int c_idx = find_card(opp_hand[i], deck, step_deck_size);
-            // check to have card, if not than hand is not valid
+            // check if card not found than hand is not valid
             if (c_idx == -1) 
             {   
-                have_card = 0;
+                valid_hand = 0;
                 break;
             }
             move_to_end(deck, c_idx, --step_deck_size);
             opp_idxs[step_opp_last_idx] = deck + step_deck_size;
         }
         
-        if (!have_card) continue;
+        if (!valid_hand) continue;
         int comb_score = eval_cards(opp_idxs, board_size);
         int comb_rank = hand_rank(comb_score);
         ++combinations[comb_rank]; 
