@@ -29,8 +29,24 @@ get_decision_exp = api.model(
         'board': fields.List(fields.String, default=example['board'], min_items=0, max_items=5),
         'pot': fields.Float(required=True, default=example['pot'], description='Pot'),
         'stage': fields.String(required=True, default=example['stage'], description='Stage', enum=stages),
-        'positions': fields.List(fields.String, default=example['positions'], enum=pl_types, min_items=1, max_items=9),
-        'action_sequence': fields.List(fields.String, default=example['action_sequence'], enum=pl_types, min_items=1, max_items=9),
+        'positions': fields.List(
+            fields.String, 
+            default=example['positions'], 
+            enum=pl_types, 
+            min_items=1, 
+            max_items=9,
+            description="""Queue of players in a hand. 
+            Example: ["OPP_1", "OPP_2", "HERO"] 0 index (OPP_1) - SB, 1 (OPP_2) - BB, last index (HERO) - BTN.
+            All players are needed, even if they have folded.
+            """
+            ),
+        'action_sequence': fields.List(
+            fields.String, 
+            default=example['action_sequence'], 
+            enum=pl_types, 
+            min_items=1, 
+            max_items=9,
+            description='Who will play after the hero if he plays passively. Do not include folded players'),
         'players_stats': fields.Nested(players_stats_model, default=example['players_stats'])
         })
 
