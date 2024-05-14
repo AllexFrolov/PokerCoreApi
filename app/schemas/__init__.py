@@ -1,4 +1,7 @@
+from flask_restx import fields
 from enum import Enum
+
+from config import COMBINATIONS_NAME
 
 class Actions(Enum):
     ALL_IN: str = 'ALL_IN'
@@ -28,3 +31,10 @@ class PlayerTypes(Enum):
     @classmethod
     def opps(cls):
         return [v for k, v in cls.__dict__.items() if 'OPP' in k]
+    
+class PossibleCombs(fields.Raw):
+    __schema_type__ = 'json'
+    __schema_example__ = {
+        'value': [1/len(COMBINATIONS_NAME)]*len(COMBINATIONS_NAME),
+        'names': COMBINATIONS_NAME
+                          }

@@ -1,33 +1,39 @@
 #pylint: disable=missing-docstring
 from flask_restx import Namespace, Resource, fields
 from core.model import make_action
-from schemas import Actions, PokerStage
-from config import COMBINATIONS_NAME
+from schemas import Actions, PokerStage, PossibleCombs, PlayerTypes
+from .examples.decision_maker_defaults import example
 
 ROUTE = 'DecisionMaker'
 
 api = Namespace(ROUTE, description='make action')
+pl_types = [name for name, _ in PlayerTypes.__members__.items()]
+stages = [name for name, _ in PokerStage.__members__.items()]
+
+player_stats_model = api.model('PlayerStats', {
+    'stack': fields.Float(required=True, description='Player stack'),
+    'bet': fields.Float(required=True, description='Player bet'),
+    'call_size': fields.Float(required=True, description='Player call size'),
+    'active': fields.Boolean(required=True, description='Is player active'),
+    'dealer': fields.Boolean(required=True, description='Is player a dealer'),
+    'all_in': fields.Boolean(required=True, description='Is player all-in'),
+    'sit_out': fields.Boolean(required=True, description='Is player sitting out'),
+})
+
+players_stats_model = api.model("PlayersStats", {player_type: fields.Nested(player_stats_model) for player_type in pl_types})
 
 get_decision_exp = api.model(
     f'/{ROUTE}/get_decision/expect', {
         'hand': fields.List(fields.String(required=True, description='Hero hand'),
-                            default=['7d', '2h'], min_items=2, max_items=2),
-        'board': fields.List(fields.String, default=[], min_items=0, max_items=5),
-        'pot': fields.Float(required=True, default=1.5, description='Pot'),
-        'stage': fields.String(required=True, description='Stage',
-                               enum=[name for name, _ in PokerStage.__members__.items()]),
-        'positions': fields.List(fields.Integer, default=[0], min_items=1, max_items=9),
-        'action_sequence': fields.List(fields.Integer, default=[0], min_items=1, max_items=9),
-        'players_stats': fields.Raw(required=True)
+                            default=example['hand'], min_items=2, max_items=2),
+        'board': fields.List(fields.String, default=example['board'], min_items=0, max_items=5),
+        'pot': fields.Float(required=True, default=example['pot'], description='Pot'),
+        'stage': fields.String(required=True, default=example['stage'], description='Stage', enum=stages),
+        'positions': fields.List(fields.String, default=example['positions'], enum=pl_types, min_items=1, max_items=9),
+        'action_sequence': fields.List(fields.String, default=example['action_sequence'], enum=pl_types, min_items=1, max_items=9),
+        'players_stats': fields.Nested(players_stats_model, default=example['players_stats'])
         })
 
-
-class PossibleCombs(fields.Raw):
-    __schema_type__ = 'json'
-    __schema_example__ = {
-        'value': [1/len(COMBINATIONS_NAME)]*len(COMBINATIONS_NAME),
-        'names': COMBINATIONS_NAME
-                          }
 
 get_decision_resp = api.model(
     f'/{ROUTE}/get_decision/response', {
