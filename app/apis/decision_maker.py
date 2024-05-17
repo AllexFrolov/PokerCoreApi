@@ -6,7 +6,7 @@ from .examples.decision_maker_defaults import example
 
 ROUTE = 'DecisionMaker'
 
-api = Namespace(ROUTE, description='make action')
+api = Namespace(ROUTE, description='compute action')
 pl_types = [name for name, _ in PlayerTypes.__members__.items()]
 stages = [name for name, _ in PokerStage.__members__.items()]
 
@@ -23,7 +23,7 @@ player_stats_model = api.model('PlayerStats', {
 players_stats_model = api.model("PlayersStats", {player_type: fields.Nested(player_stats_model) for player_type in pl_types})
 
 get_decision_exp = api.model(
-    f'/{ROUTE}/get_decision/expect', {
+    f'/{ROUTE}/make_decision/expect', {
         'hand': fields.List(fields.String(required=True, description='Hero hand'),
                             default=example['hand'], min_items=2, max_items=2),
         'board': fields.List(fields.String, default=example['board'], min_items=0, max_items=5),
@@ -52,7 +52,7 @@ get_decision_exp = api.model(
 
 
 get_decision_resp = api.model(
-    f'/{ROUTE}/get_decision/response', {
+    f'/{ROUTE}/make_decision/response', {
         'action': fields.String(required=True, description='Action', enum=[name for name, _ in Actions.__members__.items()]),
         'win_rate': fields.Float(required=True, description='Win rate'),
         'bet_size': fields.Float(required=True, description='Bet size'),
@@ -66,5 +66,5 @@ class PlayerStats(Resource):
     @api.doc('make action')
     @api.expect(get_decision_exp)
     @api.marshal_with(get_decision_resp, code=200)
-    def post(self):
+    def get(self):
         return make_action(**api.payload), 200
